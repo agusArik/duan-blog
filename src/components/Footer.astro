@@ -1,0 +1,23 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-border">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-display text-xs text-text-muted">
+    <p>Hecho con Astro y Tailwind, {year}</p>
+
+    <div class="flex items-center gap-4">
+      <a
+        href="https://github.com/gomezAgustinVim/duan-blog"
+        class="hover:text-accent transition-colors"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Código fuente
+      </a>
+      <a href="#main" class="hover:text-accent transition-colors">
+        Volver arriba ↑
+      </a>
+    </div>
+  </div>
+</footer>

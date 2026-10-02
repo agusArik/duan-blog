@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404">
+  <div class="card max-w-lg mx-auto mt-10 p-6 text-center">
+    <p class="font-display font-bold text-3xl text-text mb-2">404: segfault</p>
+    <p class="text-text-muted mb-6">La página que buscás no está mapeada a ninguna ruta.</p>
+    <a
+      href="/"
+      class="inline-flex items-center gap-2 rounded bg-accent text-bg px-4 py-2 font-display text-sm hover:opacity-90 transition-opacity"
+    >
+      Volver al inicio
+    </a>
+  </div>
+</BaseLayout>

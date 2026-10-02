@@ -1,0 +1,61 @@
+---
+import '@/styles/global.css';
+import TopBar from '@/components/TopBar.astro';
+import Footer from '@/components/Footer.astro';
+import CommandPalette from '@/components/CommandPalette.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Blog personal sobre Linux. Acá voy documentando todas las configuraciones, instalaciones, distros y proyectos que he construido a lo largo del tiempo.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title} · arik dev</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const theme =
+          stored ?? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-accent focus:text-bg focus:px-3 focus:py-2 focus:rounded"
+    >
+      Saltar al contenido
+    </a>
+
+    <TopBar />
+
+    <main id="main" class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+      <slot />
+    </main>
+
+    <Footer />
+    <CommandPalette />
+  </body>
+</html>

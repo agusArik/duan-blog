@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { readingTimeMinutes, formatDate } from '@/lib/format';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const minutes = readingTimeMinutes(post.body);
+---
+
+<a href={`/blog/${post.id}`} class="card p-5 flex flex-col gap-2 h-full group">
+  <h3 class="font-display font-semibold text-base sm:text-lg text-text group-hover:text-accent transition-colors">
+    {post.data.title}
+  </h3>
+  <p class="text-sm text-text-muted leading-relaxed flex-1">{post.data.description}</p>
+  <div class="flex items-center gap-3 text-xs font-mono text-text-muted pt-2">
+    <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{minutes} min de lectura</span>
+  </div>
+  {post.data.tags.length > 0 && (
+    <div class="flex flex-wrap gap-1.5 pt-1">
+      {post.data.tags.map((tag) => (
+        <span class="text-[0.7rem] font-mono px-1.5 py-0.5 rounded bg-surface-raised text-accent-2 border border-border">
+          #{tag}
+        </span>
+      ))}
+    </div>
+  )}
+</a>

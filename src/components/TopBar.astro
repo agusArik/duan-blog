@@ -1,0 +1,85 @@
+---
+const links = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Blog', href: '/blog' },
+];
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+function isActive(href: string) {
+  const clean = href.replace(/\/$/, '') || '/';
+  if (clean === '/') return path === '/';
+  return path === clean || path.startsWith(`${clean}/`);
+}
+---
+
+<header class="sticky top-0 z-40 border-b border-border/80 bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-6">
+    <a href="/" class="font-display font-semibold text-sm text-text hover:text-accent transition-colors shrink-0">
+      arik dev
+    </a>
+
+    <nav aria-label="Principal" class="flex items-center gap-1">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+          class:list={[
+            'font-display text-sm rounded px-2.5 py-1.5 transition-colors',
+            isActive(link.href)
+              ? 'text-accent bg-accent/10'
+              : 'text-text-muted hover:text-text hover:bg-surface',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2">
+      <button
+        type="button"
+        id="command-palette-trigger"
+        class="hidden sm:flex items-center gap-1.5 rounded border border-border px-2.5 py-1.5 text-xs text-text-muted hover:text-text hover:border-accent/50 transition-colors"
+        aria-label="Buscar posts"
+      >
+        <span>Buscar</span>
+        <span class="opacity-60">Ctrl K</span>
+      </button>
+
+      <button
+        type="button"
+        id="theme-toggle"
+        class="rounded border border-border px-2.5 py-1.5 text-text-muted hover:text-text hover:border-accent/50 transition-colors"
+        data-to-light="Cambiar a tema claro"
+        data-to-dark="Cambiar a tema oscuro"
+        aria-label="Cambiar a tema oscuro"
+      >
+        <span id="theme-toggle-icon" aria-hidden="true">☾</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-toggle-icon');
+    if (!btn || !icon) return;
+
+    function sync() {
+      const theme = document.documentElement.getAttribute('data-theme');
+      icon.textContent = theme === 'light' ? '☀' : '☾';
+      btn.setAttribute('aria-label', theme === 'light' ? btn.dataset.toDark : btn.dataset.toLight);
+    }
+    sync();
+
+    btn.addEventListener('click', function () {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      sync();
+    });
+  })();
+</script>

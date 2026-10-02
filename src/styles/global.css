@@ -1,0 +1,179 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------- */
+/* Design tokens                                                          */
+/* Dark navy-violet identity (kept from the original direction), with the */
+/* terminal-chrome motif toned down: no more traffic-light window bars —  */
+/* just clean cards, with monospace kept only for small accents (labels,  */
+/* tags, the brand mark).                                                 */
+/* ---------------------------------------------------------------------- */
+
+@theme {
+  --font-display: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg: #14151f;
+  --color-surface: #1b1d29;
+  --color-surface-raised: #21243352;
+  --color-border: #2c2f42;
+  --color-text: #e7e5ec;
+  --color-text-muted: #9391a6;
+  --color-accent: #8b93f0;
+  --color-accent-2: #7ec699;
+  --color-accent-3: #e0ac6f;
+  --color-danger: #e2685f;
+  --color-warn: #e0c069;
+  --color-ok: #7ec699;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #f3f4f8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #eef0f7;
+  --color-border: #dcdfeb;
+  --color-text: #1c1e2b;
+  --color-text-muted: #63637a;
+  --color-accent: #5a54d6;
+  --color-accent-2: #3f8f63;
+  --color-accent-3: #b5732f;
+  --color-danger: #c9463c;
+  --color-warn: #b3872f;
+  --color-ok: #3f8f63;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  html[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Plain content card — replaces the old terminal-window chrome. */
+  .card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    transition:
+      transform 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  }
+
+  /* A dashed rule styled after a tmux/waybar status separator — the one
+     small nod to the original identity kept between sections. */
+  .status-rule {
+    height: 1px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0,
+      var(--color-border) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  }
+
+  .prose-post {
+    color: var(--color-text);
+    max-width: 65ch;
+  }
+  .prose-post :where(h2, h3, h4) {
+    font-family: var(--font-display);
+    color: var(--color-text);
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+    font-weight: 600;
+  }
+  .prose-post h2 {
+    font-size: 1.35rem;
+  }
+  .prose-post h3 {
+    font-size: 1.1rem;
+  }
+  .prose-post p,
+  .prose-post ul,
+  .prose-post ol {
+    margin-bottom: 1.1em;
+    line-height: 1.75;
+    color: var(--color-text);
+  }
+  .prose-post ul,
+  .prose-post ol {
+    padding-left: 1.4em;
+  }
+  .prose-post ul {
+    list-style: disc;
+  }
+  .prose-post ol {
+    list-style: decimal;
+  }
+  .prose-post a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-post code {
+    font-family: var(--font-mono);
+    background-color: var(--color-surface-raised);
+    padding: 0.1em 0.4em;
+    border-radius: 0.3em;
+    font-size: 0.9em;
+  }
+  .prose-post pre {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+    border: 1px solid var(--color-border);
+  }
+  .prose-post pre code {
+    background: none;
+    padding: 0;
+  }
+  .prose-post blockquote {
+    border-left: 2px solid var(--color-accent-2);
+    padding-left: 1rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-bottom: 1.1em;
+  }
+}

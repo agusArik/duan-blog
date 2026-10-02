@@ -1,0 +1,143 @@
+---
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', (entry) => !entry.data.draft);
+
+type PaletteItem = { label: string; href: string; group: string };
+
+const pages: PaletteItem[] = [
+  { label: 'Inicio', href: '/', group: 'Páginas' },
+  { label: 'Blog', href: '/blog', group: 'Páginas' },
+];
+
+const posts: PaletteItem[] = allPosts.map((p) => ({
+  label: p.data.title,
+  href: `/blog/${p.id}`,
+  group: 'Posts',
+}));
+
+const items: PaletteItem[] = [...pages, ...posts];
+---
+
+<div
+  id="command-palette"
+  data-items={JSON.stringify(items)}
+  class="hidden fixed inset-0 z-50 items-start justify-center pt-[12vh] px-4"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Buscar"
+>
+  <div id="command-palette-backdrop" class="absolute inset-0 bg-bg/70 backdrop-blur-sm"></div>
+
+  <div class="card relative w-full max-w-lg p-3">
+    <input
+      id="command-palette-input"
+      type="text"
+      placeholder="Buscar posts o páginas"
+      autocomplete="off"
+      class="w-full bg-transparent font-mono text-sm text-text placeholder:text-text-muted outline-none border-b border-border pb-2 mb-2"
+    />
+    <ul id="command-palette-results" class="max-h-72 overflow-y-auto font-mono text-sm"></ul>
+    <p class="text-[0.7rem] text-text-muted pt-2 border-t border-border mt-2">
+      Navegar con ↑↓, elegir con ↵, cerrar con esc
+    </p>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('command-palette');
+    const input = document.getElementById('command-palette-input');
+    const results = document.getElementById('command-palette-results');
+    const trigger = document.getElementById('command-palette-trigger');
+    const backdrop = document.getElementById('command-palette-backdrop');
+    if (!root || !input || !results) return;
+
+    const items = JSON.parse(root.dataset.items || '[]');
+    let activeIndex = 0;
+    let filtered = items;
+
+    function render() {
+      results.innerHTML = '';
+      if (filtered.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'px-2 py-2 text-text-muted';
+        li.textContent = 'Sin resultados.';
+        results.appendChild(li);
+        return;
+      }
+      let lastGroup = '';
+      filtered.forEach((item, i) => {
+        if (item.group !== lastGroup) {
+          const groupEl = document.createElement('li');
+          groupEl.className = 'px-2 pt-2 pb-1 text-[0.7rem] uppercase tracking-wide text-accent-2';
+          groupEl.textContent = item.group;
+          results.appendChild(groupEl);
+          lastGroup = item.group;
+        }
+        const li = document.createElement('li');
+        li.className =
+          'px-2 py-1.5 rounded cursor-pointer ' +
+          (i === activeIndex ? 'bg-accent/15 text-accent' : 'text-text hover:bg-surface-raised');
+        li.textContent = item.label;
+        li.addEventListener('mouseenter', () => {
+          activeIndex = i;
+          render();
+        });
+        li.addEventListener('click', () => {
+          window.location.href = item.href;
+        });
+        results.appendChild(li);
+      });
+    }
+
+    function open() {
+      root.classList.remove('hidden');
+      root.classList.add('flex');
+      input.value = '';
+      filtered = items;
+      activeIndex = 0;
+      render();
+      setTimeout(() => input.focus(), 0);
+    }
+
+    function close() {
+      root.classList.add('hidden');
+      root.classList.remove('flex');
+    }
+
+    trigger?.addEventListener('click', open);
+    backdrop?.addEventListener('click', close);
+
+    document.addEventListener('keydown', (e) => {
+      const isOpen = !root.classList.contains('hidden');
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        isOpen ? close() : open();
+        return;
+      }
+      if (!isOpen) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, filtered.length - 1);
+        render();
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        render();
+      }
+      if (e.key === 'Enter' && filtered[activeIndex]) {
+        window.location.href = filtered[activeIndex].href;
+      }
+    });
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      filtered = q ? items.filter((it) => it.label.toLowerCase().includes(q)) : items;
+      activeIndex = 0;
+      render();
+    });
+  })();
+</script>

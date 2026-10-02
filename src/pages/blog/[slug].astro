@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { readingTimeMinutes, formatDate } from '@/lib/format';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (e) => !e.data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Awaited<ReturnType<typeof getCollection<'blog'>>>[number] };
+const { Content } = await render(post);
+const minutes = readingTimeMinutes(post.body);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <a href="/blog" class="font-mono text-sm text-accent hover:underline underline-offset-2">
+    ← Volver al blog
+  </a>
+
+  <div class="mt-6 mb-8">
+    <h1 class="font-display font-bold text-3xl sm:text-4xl text-text mb-3">{post.data.title}</h1>
+    <div class="flex flex-wrap items-center gap-3 font-mono text-xs text-text-muted">
+      <span>Publicado el {formatDate(post.data.date)}</span>
+      <span aria-hidden="true">·</span>
+      <span>{minutes} min de lectura</span>
+    </div>
+    {post.data.tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mt-3">
+        {post.data.tags.map((tag) => (
+          <span class="text-[0.7rem] font-mono px-1.5 py-0.5 rounded bg-surface-raised text-accent-2 border border-border">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <article class="card p-5 sm:p-7">
+    <div class="prose-post mx-auto">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import PostCard from '@/components/PostCard.astro';
+
+const posts = (await getCollection('blog', (e) => !e.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout title="Inicio">
+  <Hero />
+
+  <section class="mt-14 sm:mt-20">
+    <div class="flex items-end justify-between mb-5">
+      <div>
+        <p class="font-mono text-xs text-accent-2 mb-1">escritos</p>
+        <h2 class="font-display font-semibold text-2xl text-text">Últimos posts</h2>
+      </div>
+      <a href="/blog" class="font-display text-sm text-accent hover:underline underline-offset-2 whitespace-nowrap">
+        Ver todos →
+      </a>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+</BaseLayout>
